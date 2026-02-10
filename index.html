@@ -24,7 +24,7 @@
             width: 360px;
             padding: 30px;
             border-radius: 14px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
             text-align: center;
         }
 
@@ -40,6 +40,11 @@
             border: 1px solid #ccc;
             margin-bottom: 15px;
             font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4a6cf7;
         }
 
         button {
@@ -57,15 +62,43 @@
             background: #364fc7;
         }
 
-        .result {
+        .result-box {
             margin-top: 20px;
-            font-size: 18px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f1f5ff;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .result-box h3 {
+            margin: 0;
+            color: #4a6cf7;
+            font-size: 20px;
+        }
+
+        .result-box p {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0 0;
             color: #222;
         }
 
         .error {
             margin-top: 15px;
             color: red;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -78,22 +111,27 @@
         <input type="text" id="city" placeholder="Enter city name">
         <button onclick="getWeather()">Get Weather</button>
 
-        <div class="result" id="result"></div>
+        <div class="result-box" id="resultBox">
+            <h3 id="cityName"></h3>
+            <p id="temperature"></p>
+        </div>
+
         <div class="error" id="error"></div>
     </div>
 
     <script>
         async function getWeather() {
+
             if (!navigator.onLine) {
                 document.getElementById("error").innerText =
                     "No internet connection. Please check your WiFi.";
-                document.getElementById("result").innerText = "";
+                document.getElementById("resultBox").style.display = "none";
                 return;
             }
 
             try {
-                document.getElementById("result").innerText = "";
                 document.getElementById("error").innerText = "";
+                document.getElementById("resultBox").style.display = "none";
 
                 const city = document.getElementById("city").value.trim();
 
@@ -130,13 +168,18 @@
 
                 const weatherData = await weatherResponse.json();
 
-                document.getElementById("result").innerText =
-                    "Temperature in " + city + ": " +
+                document.getElementById("cityName").innerText =
+                    city.toUpperCase();
+
+                document.getElementById("temperature").innerText =
                     weatherData.current_weather.temperature + "°C";
+
+                document.getElementById("resultBox").style.display = "block";
 
             } catch (error) {
                 document.getElementById("error").innerText =
                     "Unable to fetch weather data";
+                document.getElementById("resultBox").style.display = "none";
             }
         }
     </script>
